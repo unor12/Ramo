@@ -37,12 +37,12 @@ class MyApp extends StatelessWidget {
                 DatabaseService(uid: FirebaseAuth.instance.currentUser.uid)),
         StreamProvider(
             create: (context) => context.read<AuthService>().authStateChanges),
-        FirebaseAuth.instance.currentUser != null
-            ? StreamProvider<UserData>.value(
-                value:
-                    DatabaseService(uid: FirebaseAuth.instance.currentUser.uid)
-                        .userData)
-            : StreamProvider<UserData>.value(value: DatabaseService().userData)
+        // FirebaseAuth.instance.currentUser != null
+        //     ? StreamProvider<UserData>.value(
+        //         value:
+        //             DatabaseService(uid: FirebaseAuth.instance.currentUser.uid)
+        //                 .userData)
+        //     : StreamProvider<UserData>.value(value: DatabaseService().userData)
       ],
       child: MaterialApp(
         onGenerateRoute: RouteGenerator.generateRoute,
@@ -71,11 +71,11 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebaseuser = context.watch<User>();
-    final userData = context.watch<UserData>();
+    // final userData = context.watch<UserData>();
 
     if (firebaseuser != null) {
       // print(firebaseuser.email);
-      print(userData.email);
+      // print(userData.email);
       return HomePageStateful();
     } else {
       return SignInPage();

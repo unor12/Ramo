@@ -14,16 +14,24 @@ class AuthService {
 
   Future<bool> signIn({String email, String password}) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      UserCredential result = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       print('userfound');
-      return true; // not the best way AHHAHA
+      User user = result.user;
+      if (user.emailVerified) {
+        return true;
+      } else {
+        print(user.email + ' is not verified');
+        return false;
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         //update later with message pop ups or kung ano man da
         print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
+      } else {
+        print(e);
       }
       return false;
     }
@@ -37,10 +45,13 @@ class AuthService {
     //   return e.message;
     // }
     try {
-      await FirebaseAuth.instance
+      UserCredential result = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       print('user signed up successfully');
       // addUser(email: email, fullName: fullName);
+      User user = result.user;
+      await user.sendEmailVerification();
+      print('email verification sent to ' + user.email);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
