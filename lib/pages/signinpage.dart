@@ -39,30 +39,31 @@ class SignInPage extends StatelessWidget {
                   height: 20.0,
                 ),
                 TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      labelStyle: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    labelStyle: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: BorderSide(
+                        color: Color(0xFF009245),
+                        width: 2.0,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50.0),
-                        borderSide: BorderSide(
-                          color: Color(0xFF009245),
-                          width: 2.0,
-                        ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                      borderSide: BorderSide(
+                        color: Color(0xFF82CAA4),
+                        width: 2.0,
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(50.0),
-                        borderSide: BorderSide(
-                          color: Color(0xFF82CAA4),
-                          width: 2.0,
-                        ),
-                      ),
-                    )),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 20.0,
                 ),
@@ -97,22 +98,23 @@ class SignInPage extends StatelessWidget {
                 ),
                 TextButton(
                   style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              left: 50, right: 50, top: 10, bottom: 10)),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.green),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              side: BorderSide(color: Colors.green)))),
+                    padding: MaterialStateProperty.all<EdgeInsets>(
+                        EdgeInsets.only(
+                            left: 50, right: 50, top: 10, bottom: 10)),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.green),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            side: BorderSide(color: Colors.green))),
+                  ),
                   onPressed: () async {
                     dynamic result = await context.read<AuthService>().signIn(
                           email: emailController.text.trim(),
                           password: passwordController.text.trim(),
                         );
-                    if (result) {
-                      Navigator.of(context).pushNamed('/home');
+                    if (result != null) {
+                      // Navigator.of(context).pushNamed('/home');
                     }
                   },
                   child: Text(

@@ -132,15 +132,15 @@ class SignUpPage extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(30.0),
                                       side: BorderSide(color: Colors.green)))),
                       onPressed: () async {
-                        bool result = await context.read<AuthService>().signUp(
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim());
-                        if (result) {
-                          await context
-                              .read<DatabaseService>()
-                              .addUserToDatabase(nameController.text.trim(),
-                                  emailController.text.trim());
-                          Navigator.of(context).pushNamed('/home');
+                        dynamic result = await context
+                            .read<AuthService>()
+                            .signUp(
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim(),
+                                name: nameController.text.trim());
+                        if (result != null) {
+                          // Navigator.of(context).pushNamed('/home');
+                          Navigator.of(context).pop();
                         }
                       },
                       child: Text(

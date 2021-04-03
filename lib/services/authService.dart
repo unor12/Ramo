@@ -1,29 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ramo/models/userData.dart';
+import 'package:ramo/services/databaseService.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth;
 
   AuthService(this._firebaseAuth);
+  UserData _firebaseUser(User user) {
+    return user != null
+        ? UserData(uid: user.uid, email: user.email, name: user.displayName)
+        : null;
+  }
 
-  Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
+  Stream<UserData> get authStateChanges =>
+      _firebaseAuth.authStateChanges().map(_firebaseUser);
 
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
 
-  Future<bool> signIn({String email, String password}) async {
+  Future<UserData> signIn({String email, String password}) async {
     try {
       UserCredential result = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       print('userfound');
       User user = result.user;
-      if (user.emailVerified) {
-        return true;
-      } else {
-        print(user.email + ' is not verified');
-        return false;
-      }
+      // if (!user.emailVerified) {
+      //   print(user.email + ' is not verified');
+      //   return null;
+      // }
+      return _firebaseUser(user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         //update later with message pop ups or kung ano man da
@@ -33,11 +40,11 @@ class AuthService {
       } else {
         print(e);
       }
-      return false;
+      return null;
     }
   }
 
-  Future<bool> signUp({String email, String password}) async {
+  Future<UserData> signUp({String email, String password, String name}) async {
     // try {
     //   await _firebaseAuth.createUserWithEmailAndPassword(
     //       email: email, password: password);
@@ -48,18 +55,19 @@ class AuthService {
       UserCredential result = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       print('user signed up successfully');
-      // addUser(email: email, fullName: fullName);
       User user = result.user;
-      await user.sendEmailVerification();
-      print('email verification sent to ' + user.email);
-      return true;
+      user.updateProfile(displayName: name); //update name of user in firebase
+      // await user.sendEmailVerification();
+      // print('email verification sent to ' + user.email);
+      await DatabaseService(uid: user.uid).addUserToDatabase(name, email);
+      return _firebaseUser(user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
       }
-      return false;
+      return null;
     }
   }
 

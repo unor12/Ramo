@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ramo/models/userData.dart';
 import 'package:ramo/services/authService.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -44,10 +46,11 @@ class _HomePageStateful extends State<HomePageStateful> {
 
   @override
   Widget build(BuildContext context) {
+    UserData user = context.watch<UserData>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Jacob',
+        title: Text(
+          user.name != null ? user.name : '',
           style: TextStyle(
               fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.black),
         ),
@@ -58,6 +61,8 @@ class _HomePageStateful extends State<HomePageStateful> {
           ElevatedButton(
             onPressed: () {
               context.read<AuthService>().signOut();
+              print(FirebaseAuth.instance.currentUser);
+              print(user.email + "signed out");
             },
             child: Text("Sign Out"),
           ),

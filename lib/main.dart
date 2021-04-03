@@ -32,17 +32,17 @@ class MyApp extends StatelessWidget {
         Provider<AuthService>(
           create: (_) => AuthService(FirebaseAuth.instance),
         ),
-        Provider<DatabaseService>(
-            create: (_) =>
-                DatabaseService(uid: FirebaseAuth.instance.currentUser.uid)),
+        // Provider<DatabaseService>(
+        //     create: (_) =>
+        //         DatabaseService(uid: FirebaseAuth.instance.currentUser.uid)),
         StreamProvider(
             create: (context) => context.read<AuthService>().authStateChanges),
-        FirebaseAuth.instance.currentUser != null
-            ? StreamProvider<UserData>.value(
-                value:
-                    DatabaseService(uid: FirebaseAuth.instance.currentUser.uid)
-                        .userData)
-            : StreamProvider<UserData>.value(value: DatabaseService().userData)
+        // FirebaseAuth.instance.currentUser != null
+        //     ? StreamProvider<UserData>.value(
+        //         value:
+        //             DatabaseService(uid: FirebaseAuth.instance.currentUser.uid)
+        //                 .userData)
+        //     : StreamProvider<UserData>.value(value: DatabaseService().userData)
       ],
       child: MaterialApp(
         onGenerateRoute: RouteGenerator.generateRoute,
@@ -70,15 +70,31 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firebaseuser = context.watch<User>();
-    final userData = context.watch<UserData>();
+    // final firebaseuser = context.watch<UserData>();
+    // // final userData = context.watch<UserData>();
 
-    if (firebaseuser != null) {
-      // print(firebaseuser.email);
-      print(userData.email);
-      return HomePageStateful();
-    } else {
-      return SignInPage();
-    }
+    // if (firebaseuser != null) {
+    //   print(firebaseuser.uid + " has signed in. Proceeding to home");
+    //   return HomePageStateful();
+    // } else {
+    //   print("No user is currently logged in. Proceeding to sign in page");
+    //   return SignInPage();
+    // }
+    return StreamBuilder(
+      stream: context.watch<AuthService>().authStateChanges,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.active) {
+          return Center(child: CircularProgressIndicator());
+        }
+        final user = snapshot.data;
+        if (user != null) {
+          print(user.uid + " has signed in. Proceeding to home");
+          return HomePageStateful();
+        } else {
+          print("No user is currently logged in. Proceeding to sign in page");
+          return SignInPage();
+        }
+      },
+    );
   }
 }
